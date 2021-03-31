@@ -1,0 +1,15 @@
+.ToDoInput {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+}
+.ToDoInput input, .ToDoInput button{
+    font-size: 18px;
+    padding: 10px;
+}
+.ToDoInput input {
+    width: 25%;
+    border-radius: 6px;
+    border: 1px solid black;
+}

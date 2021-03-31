@@ -1,57 +1,73 @@
-import React, { useState } from "react";
-import Header from "./components/header/header";
-import ListItem from "./components/list-item/list-item";
-import List from "./components/list/list";
-import "./styles.css";
+import { useState } from 'react';
+import './App.css';
+import ToDoInput from './components/ToDoInput';
+import ToDoItems from './components/ToDoItems';
 
-export default function App() {
-  const [text, setText] = useState("");
-  const [list, setList] = useState([]);
+function ToDoApp() {
+  const [toDoitems, setToDoItems] = useState([]);
+  const [newToDoitem, setNewToDoitem] = useState('');
 
-  const headerProps = {
-    textBox: {
-      value: text,
-      onChange: (e) => setText(e.target.value)
-    },
-    button: {
-      text: "Add",
-      onClick: () => {
-        setList([
-          ...list,
-          { text, identifier: new Date().getTime(), status: true }
-        ]);
-        setText("");
-      }
-    }
+  const addToDoItem = () => {
+    setToDoItems(prevState => [...prevState, {text: newToDoitem, id: new Date().getTime(), category: 'To Do'}]);
+    setNewToDoitem('');
   };
 
-  const listItemProps = {
-    clickHandler: (key) => {
-      let newList = JSON.parse(JSON.stringify(list));
-      const clickedItemIndex = newList.findIndex(
-        (item) => item.identifier === key
-      );
-      newList[clickedItemIndex].status = !newList[clickedItemIndex].status;
-      setList([...newList]);
-    },
-    button: {
-      text: "Delete",
-      onClick: (key) => {
-        let newList = JSON.parse(JSON.stringify(list));
-        const filteredList = newList.filter((item) => item.identifier !== key);
-        setList(filteredList);
-      }
-    }
+  const deleteToDoItem = (id) => {
+    let newToDoItems = toDoitems.filter((item) => {
+      return item.id !== parseInt(id);
+    });
+    setToDoItems(newToDoItems);
+  };
+
+  const editToDoItem = (id) => {
+    let newToDoItems = toDoitems.filter((item) => {
+        return item;
+    });
+    setToDoItems(newToDoItems);
+  };
+
+  const onDragStart = (ev, id) => {
+    ev.dataTransfer.setData("text/plain", id);
+  }
+
+  const onDragOver = (ev) => {
+    ev.preventDefault();
+  }
+
+  const onDrop = (ev, cat) => {
+    let id = ev.dataTransfer.getData("text");
+    
+    let newToDoItems = toDoitems.filter((item) => {
+        if (item.id === parseInt(id)) {
+          item.category = cat;
+        }
+        return item;
+    });
+
+    setToDoItems(newToDoItems);
+  };
+
+  const toDoItemsProps = {
+    onDragStart, 
+    onDragOver, 
+    onDrop,
+    toDoitems,
+    deleteToDoItem,
+    editToDoItem
+  };
+
+  const toDoInputProps = {
+    setNewToDoitem,
+    addToDoItem,
+    newToDoitem
   };
 
   return (
-    <div className="App">
-      <Header {...headerProps} />
-      <List>
-        {list.map((item) => (
-          <ListItem key={item.identifier} {...item} {...listItemProps} />
-        ))}
-      </List>
+    <div className="ToDoApp">
+      <ToDoInput {...toDoInputProps} />
+      <ToDoItems {...toDoItemsProps} />
     </div>
   );
 }
+
+export default ToDoApp;
